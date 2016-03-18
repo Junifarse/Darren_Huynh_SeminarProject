@@ -1,89 +1,161 @@
-import Tkinter
+import Tkinter as tk
+from Tkinter import *
+def say_hello():
+    print 'hello'
+def quit(root):
+    root.destroy()
 
-if __name__ == '__main__':
-    form = Tkinter.Tk()
+LARGE_FONT= ("Verdana", 12)
+#Linked Frame
+class InventoryMGMT(tk.Tk):
 
-    getFld = Tkinter.IntVar()
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand = True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+        self.frames = {}
+        for F in (StartPage, CreatePage, EditPage,ViewPage):
+            frame = F(container, self)
+            self.frames[F] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+        self.show_frame(StartPage)
+        
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
 
-    form.wm_title('File Parser')
+#Start Page        
+class StartPage(tk.Frame):
 
-    stepOne = Tkinter.LabelFrame(form, text=" 1. Enter File Details: ")
-    stepOne.grid(row=0, columnspan=7, sticky='W', \
-                 padx=5, pady=5, ipadx=5, ipady=5)
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        label = tk.Label(self, text="Inventory Management", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+        create_button = tk.Button(self, text="Create Entry",
+                            command=lambda: controller.show_frame(CreatePage))
+        create_button.pack()
+        edit_button = tk.Button(self, text="Edit Entry",
+                            command=lambda: controller.show_frame(EditPage))
+        edit_button.pack()
+        view_button = tk.Button(self, text ="View Entry",
+                            command=lambda: controller.show_frame(ViewPage))
+        view_button.pack()
+        quit_button=tk.Button(self,text="Quit",
+                              command=lambda:controller.destroy())
+        quit_button.pack()
 
-    helpLf = Tkinter.LabelFrame(form, text=" Quick Help ")
-    helpLf.grid(row=0, column=9, columnspan=2, rowspan=8, \
-                sticky='NS', padx=5, pady=5)
-    helpLbl = Tkinter.Label(helpLf, text="Help will come - ask for it.")
-    helpLbl.grid(row=0)
+        
 
-    stepTwo = Tkinter.LabelFrame(form, text=" 2. Enter Table Details: ")
-    stepTwo.grid(row=2, columnspan=7, sticky='W', \
-                 padx=5, pady=5, ipadx=5, ipady=5)
+#Create Entry Page
+class CreatePage(tk.Frame):
 
-    stepThree = Tkinter.LabelFrame(form, text=" 3. Configure: ")
-    stepThree.grid(row=3, columnspan=7, sticky='W', \
-                   padx=5, pady=5, ipadx=5, ipady=5)
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Create Entry", font=LARGE_FONT)
+        label.grid(row=0,pady=10,padx=10)
+        Label(self,text="Serial Number").grid(row=2)
+        Label(self,text="Tag Number").grid(row=3)
+        Label(self,text="Shipdate").grid(row=4)
+        Label(self,text="Location").grid(row=5)
 
-    inFileLbl = Tkinter.Label(stepOne, text="Select the File:")
-    inFileLbl.grid(row=0, column=0, sticky='E', padx=5, pady=2)
+        serial = Entry(self)
+        tag = Entry(self)
+        ship =Entry(self)
+        location = Entry(self)
+        serial.grid(row=2,column=1)
+        tag.grid(row=3,column=1)
+        ship.grid(row=4,column=1)
+        location.grid(row=5,column=1)
 
-    inFileTxt = Tkinter.Entry(stepOne)
-    inFileTxt.grid(row=0, column=1, columnspan=7, sticky="WE", pady=3)
+        enter_button= tk.Button(self, text ="Enter",command = say_hello)
+        enter_button.grid(row=1,column=2)
+        
+        
 
-    inFileBtn = Tkinter.Button(stepOne, text="Browse ...")
-    inFileBtn.grid(row=0, column=8, sticky='W', padx=5, pady=2)
+        edit_button = tk.Button(self, text="Edit Entry",
+                            command=lambda: controller.show_frame(EditPage))
+        edit_button.grid(row=3,column=2)
 
-    outFileLbl = Tkinter.Label(stepOne, text="Save File to:")
-    outFileLbl.grid(row=1, column=0, sticky='E', padx=5, pady=2)
+        view_button= tk.Button(self, text="View Entry",
+                               command=lambda:controller.show_frame(ViewPage))
+        view_button.grid(row=4,column=2)
 
-    outFileTxt = Tkinter.Entry(stepOne)
-    outFileTxt.grid(row=1, column=1, columnspan=7, sticky="WE", pady=2)
+        return_button = tk.Button(self, text="Return To Menu",
+                            command=lambda: controller.show_frame(StartPage))
+        return_button.grid(row=5,column=2)
 
-    outFileBtn = Tkinter.Button(stepOne, text="Browse ...")
-    outFileBtn.grid(row=1, column=8, sticky='W', padx=5, pady=2)
+#Edit Entry Page
 
-    inEncLbl = Tkinter.Label(stepOne, text="Input File Encoding:")
-    inEncLbl.grid(row=2, column=0, sticky='E', padx=5, pady=2)
+class EditPage(tk.Frame):
 
-    inEncTxt = Tkinter.Entry(stepOne)
-    inEncTxt.grid(row=2, column=1, sticky='E', pady=2)
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Edit Entry", font=LARGE_FONT)
+        label.grid(row=0,pady=10,padx=10)
+        Label(self,text="Serial Number").grid(row=2)
+        Label(self,text='OR').grid(row=3)
+        Label(self,text="Tag Number").grid(row=4)
+        
 
-    outEncLbl = Tkinter.Label(stepOne, text="Output File Encoding:")
-    outEncLbl.grid(row=2, column=5, padx=5, pady=2)
+        serial = Entry(self)
+        tag = Entry(self)
+        ship =Entry(self)
+        location = Entry(self)
+        serial.grid(row=2,column=1)
+        tag.grid(row=4,column=1)
 
-    outEncTxt = Tkinter.Entry(stepOne)
-    outEncTxt.grid(row=2, column=7, pady=2)
+        enter_button= tk.Button(self, text ="Enter",command = say_hello)
+        enter_button.grid(row=1,column=2)
+    
+        create_button = tk.Button(self, text="Create Entry",
+                            command=lambda: controller.show_frame(CreatePage))
+        create_button.grid(row=3,column=2)
 
-    outTblLbl = Tkinter.Label(stepTwo, \
-          text="Enter the name of the table to be used in the statements:")
-    outTblLbl.grid(row=3, column=0, sticky='W', padx=5, pady=2)
+        view_button= tk.Button(self, text="View Entry",
+                               command=lambda:controller.show_frame(ViewPage))
+        view_button.grid(row=4,column=2)
 
-    outTblTxt = Tkinter.Entry(stepTwo)
-    outTblTxt.grid(row=3, column=1, columnspan=3, pady=2, sticky='WE')
+        return_button = tk.Button(self, text="Return To Menu",
+                            command=lambda: controller.show_frame(StartPage))
+        return_button.grid(row=5,column=2)
+        
+class ViewPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="View Entry", font=LARGE_FONT)
+        label.grid(row=0,pady=10,padx=10)
+        Label(self,text="Serial Number").grid(row=2)
+        Label(self,text='OR').grid(row=3)
+        Label(self,text="Tag Number").grid(row=4)
+        
 
-    fldLbl = Tkinter.Label(stepTwo, \
-                           text="Enter the field (column) names of the table:")
-    fldLbl.grid(row=4, column=0, padx=5, pady=2, sticky='W')
+        serial = Entry(self)
+        tag = Entry(self)
+        ship =Entry(self)
+        location = Entry(self)
+        serial.grid(row=2,column=1)
+        tag.grid(row=4,column=1)
+        
 
-    getFldChk = Tkinter.Checkbutton(stepTwo, \
-                           text="Get fields automatically from input file",\
-                           onvalue=1, offvalue=0)
-    getFldChk.grid(row=4, column=1, columnspan=3, pady=2, sticky='WE')
+        enter_button= tk.Button(self, text ="Enter",command = say_hello)
+        enter_button.grid(row=1,column=2)
+        
+        
 
-    fldRowTxt = Tkinter.Entry(stepTwo)
-    fldRowTxt.grid(row=5, columnspan=5, padx=5, pady=2, sticky='WE')
+        create_button = tk.Button(self, text="Create Entry",
+                            command=lambda: controller.show_frame(CreatePage))
+        create_button.grid(row=3,column=2)
 
-    transChk = Tkinter.Checkbutton(stepThree, \
-               text="Enable Transaction", onvalue=1, offvalue=0)
-    transChk.grid(row=6, sticky='W', padx=5, pady=2)
+        edit_button = tk.Button(self, text="Edit Entry",
+                            command=lambda: controller.show_frame(EditPage))
+        edit_button.grid(row=4,column=2)
 
-    transRwLbl = Tkinter.Label(stepThree, \
-                 text=" => Specify number of rows per transaction:")
-    transRwLbl.grid(row=6, column=2, columnspan=2, \
-                    sticky='W', padx=5, pady=2)
+        return_button = tk.Button(self, text="Return To Menu",
+                            command=lambda: controller.show_frame(StartPage))
+        return_button.grid(row=5,column=2)
+    
 
-    transRwTxt = Tkinter.Entry(stepThree)
-    transRwTxt.grid(row=6, column=4, sticky='WE')
-
-    form.mainloop()
+app = InventoryMGMT()
+app.mainloop()
