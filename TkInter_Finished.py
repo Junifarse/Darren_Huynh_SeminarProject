@@ -2,8 +2,7 @@ import Tkinter as tk
 from Tkinter import *
 def say_hello():
     print 'hello'
-def quit(root):
-    root.destroy()
+ 
 
 LARGE_FONT= ("Verdana", 12)
 #Linked Frame
@@ -25,6 +24,7 @@ class InventoryMGMT(tk.Tk):
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
+        
 
 #Start Page        
 class StartPage(tk.Frame):
@@ -69,7 +69,19 @@ class CreatePage(tk.Frame):
         ship.grid(row=4,column=1)
         location.grid(row=5,column=1)
 
-        enter_button= tk.Button(self, text ="Enter",command = say_hello)
+        def get_entry():
+            serial_entry=serial.get()
+            serial.delete(0,END)
+            tag_entry=tag.get()
+            tag.delete(0,END)
+            ship_entry=ship.get()
+            ship.delete(0,END)
+            location_entry=location.get()
+            location.delete(0,END)
+            print serial_entry,tag_entry,ship_entry,location_entry
+        
+
+        enter_button= tk.Button(self, text ="Enter",command = get_entry)
         enter_button.grid(row=1,column=2)
         
         
