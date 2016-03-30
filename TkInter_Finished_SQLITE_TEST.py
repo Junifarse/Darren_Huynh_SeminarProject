@@ -8,35 +8,32 @@ from tkMessageBox import*
 
 def say_hello():
     print "hello"
+
 #Sqlite Cursor Connect
 con = lite.connect('test.db',isolation_level=None)
 with con:
     cur = con.cursor()
 
-#Confirmation Popup
+#Confirmation/Message Boxes Popup
 def clickCreate():
-##    create=Toplevel()
-##    label1=Label(create,text="Entry Created")
-##    label1.pack()
-##    okay_button = tk.Button(create,text='Okay',command=create.destroy)
-##    okay_button.pack()
     showinfo(title='Entry Created',message="Entry Created")
+    
 #Empty Entry Popup
 def emptyEntry():
-##    empty=Toplevel()
-##    label1= Label(empty,text="Error: Please Enter Serial/Tag")
-##    label1.pack()
-##    okay_button=tk.Button(empty,text='Okay',command=empty.destroy)
-##    okay_button.pack()
+
     showwarning(title="Error",message="Enter Serial/Tag")
 #Computer Exists Error Popup
 def existEntry():
-##    empty=Toplevel()
-##    label1= Label(empty,text="Error: Computer Exists Already")
-##    label1.pack()
-##    okay_button=tk.Button(empty,text='Okay',command=empty.destroy)
-##    okay_button.pack()
+
     showwarning(title="Error",message="Computer Exists Already")
+
+def notexistEntry():
+    showwarning(title="Error",message="Computer Does Not Exist")
+
+def displayInfo(information):
+    showinfo(title='Information',message="Serial:,information[0]")
+
+
 LARGE_FONT= ("Verdana", 12)
 #Linked Frame
 class InventoryMGMT(tk.Tk):
@@ -163,7 +160,26 @@ class EditPage(tk.Frame):
         serial.grid(row=2,column=1)
         tag.grid(row=4,column=1)
 
-        enter_button= tk.Button(self, text ="Enter",command = say_hello)
+
+        def view_entry():
+            #Gets user input, clears upon button press
+            serial_entry=serial.get()
+            serial.delete(0,END)
+            tag_entry=tag.get()
+            tag.delete(0,END)
+            
+            #Error Catch if Serial or Tag is blank, or if computer exists already no change
+            if (serial_entry != '')and (tag_entry != ''):
+                try:
+                    cur.execute("Insert INTO Computers(Serial,Tag,ship,location) Values(?,?,?,?);",
+                                (serial_entry,tag_entry,ship_entry,location_entry))
+                    clickCreate()
+                except:
+                    existEntry()
+                    
+            else:
+                emptyEntry()
+        enter_button= tk.Button(self, text ="Enter",command = view_entry)
         enter_button.grid(row=1,column=2)
     
         create_button = tk.Button(self, text="Create Entry",
@@ -190,25 +206,39 @@ class ViewPage(tk.Frame):
 
         serial = Entry(self)
         tag = Entry(self)
-        ship =Entry(self)
-        location = Entry(self)
         serial.grid(row=2,column=1)
         tag.grid(row=4,column=1)
-        
-
-        enter_button= tk.Button(self, text ="Enter",command = say_hello)
+        def view_entry():
+            #Gets user input, clears upon button press
+            serial_entry=serial.get()
+            serial.delete(0,END)
+            tag_entry=tag.get()
+            tag.delete(0,END)
+            
+            #Error Catch if Serial or Tag is blank, or if computer exists already no change
+            if (serial_entry != '')or (tag_entry != ''):
+                try:
+                    cur.execute("SELECT * from Computers where Serial=? or Tag=?",(serial_entry,tag_entry))
+                    #cur.execute("SELECT * FROM Computers")
+                    rows = cur.fetchall()
+                    if len(rows)== 0:
+                        notexistEntry()
+                    else:
+                            for row in rows:
+                                print row
+                            displayInfo(rows)               
+                except:
+                    notexistEntry()   
+            else:
+                emptyEntry()
+        enter_button= tk.Button(self, text ="Enter",command = view_entry)
         enter_button.grid(row=1,column=2)
-        
-        
-
         create_button = tk.Button(self, text="Create Entry",
                             command=lambda: controller.show_frame(CreatePage))
         create_button.grid(row=3,column=2)
-
         edit_button = tk.Button(self, text="Edit Entry",
                             command=lambda: controller.show_frame(EditPage))
         edit_button.grid(row=4,column=2)
-
         return_button = tk.Button(self, text="Return To Menu",
                             command=lambda: controller.show_frame(StartPage))
         return_button.grid(row=5,column=2)
