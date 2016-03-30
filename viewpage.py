@@ -5,7 +5,11 @@ import sys
 from tkMessageBox import*
 
 #Filler Function
-
+global viewserial,viewtag,viewship,viewlocation
+viewserial=0
+viewtag= 0
+viewship=0
+viewlocation=0
 def say_hello():
     print "hello"
 
@@ -30,9 +34,13 @@ def existEntry():
 def notexistEntry():
     showwarning(title="Error",message="Computer Does Not Exist")
 
-def displayInfo():
+def displayInfo(information):
+    output ="Serial:%s"%(information[0])
+    output+= "Tag:%s"(information[1])
+    output+= "Shipdate: %s"(information[2])
+    output+= "Location: %s"(information[3])
     showinfo(title='Information',message=output)
-
+    
 
 LARGE_FONT= ("Verdana", 12)
 #Linked Frame
@@ -45,7 +53,7 @@ class InventoryMGMT(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        for F in (StartPage, CreatePage, EditPage,ViewPage):
+        for F in (StartPage, CreatePage, EditPage,ViewPage,InfoPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -219,24 +227,16 @@ class ViewPage(tk.Frame):
             if (serial_entry != '')or (tag_entry != ''):
                 try:
                     cur.execute("SELECT * from Computers where Serial=? or Tag=?",(serial_entry,tag_entry))
-                    #cur.execute("SELECT * FROM Computers")
                     rows = cur.fetchall()
+                    
                     if len(rows)== 0:
                         notexistEntry()
                     else:
-                        global output
-                        convert=rows[0]
+                        viewserial=row[0]
                         
-                        ttserial= "Serial: "+convert[0]
-                        tttag = "\nTag: " + convert[1]
-                        ttship="\nShip: " + str(convert[2])
-                        ttlocation="\nLocation: " +str(convert[3])
-                        
-                        output= ttserial+tttag+ttship+ttlocation
-                    
-                        
-                        displayInfo()               
+                        controller.show_frame(InfoPage)             
                 except:
+                    
                     notexistEntry()   
             else:
                 emptyEntry()
@@ -251,6 +251,31 @@ class ViewPage(tk.Frame):
         return_button = tk.Button(self, text="Return To Menu",
                             command=lambda: controller.show_frame(StartPage))
         return_button.grid(row=5,column=2)
+class InfoPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Entry Info", font=LARGE_FONT)
+        label.grid(row=0,pady=10,padx=10)
+    
+        Label(self,text="Serial Number").grid(row=2,column=1)
+        Label(self,text='Tag Number:').grid(row=3,column=1)
+        Label(self,text="Shipdate:").grid(row=4,column=1)
+        Label(self,text="Location:").grid(row=5,column=1)
+        Label(self,text=viewserial).grid(row=2,column=2)
+        Label(self,text=viewtag).grid(row=3,column=2)
+        Label(self,text=viewship).grid(row=4,column=2)
+        Label(self,text=viewlocation).grid(row=5,column=2)
+        
+        view_button= tk.Button(self, text="View Another Entry",
+                               command=lambda:controller.show_frame(ViewPage))
+        view_button.grid(row=3,column=3)
+        edit_button = tk.Button(self, text="Edit Entry",
+                            command=lambda: controller.show_frame(EditPage))
+        edit_button.grid(row=4,column=3)
+        return_button = tk.Button(self, text="Return To Menu",
+                            command=lambda: controller.show_frame(StartPage))
+        return_button.grid(row=5,column=3)
+
     
 
 app = InventoryMGMT()
