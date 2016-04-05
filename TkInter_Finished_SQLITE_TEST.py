@@ -18,6 +18,7 @@ with con:
 def clickCreate():
     showinfo(title='Entry Created',message="Entry Created")
     
+    
 #Empty Entry Popup
 def emptyEntry():
 
@@ -30,8 +31,16 @@ def existEntry():
 def notexistEntry():
     showwarning(title="Error",message="Computer Does Not Exist")
 
-def displayInfo(information):
-    showinfo(title='Information',message="Serial:,information[0]")
+def displayInfo():
+    showinfo(title='Information',message=output)
+
+#write create event to changelog
+def writecreate(serial,tag):
+    changelog=open('testchange.txt','a')
+    changelog.write("Create " + serial+" " +tag+"\n")
+    changelog.close()
+    
+
 
 
 LARGE_FONT= ("Verdana", 12)
@@ -45,7 +54,7 @@ class InventoryMGMT(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
-        for F in (StartPage, CreatePage, EditPage,ViewPage):
+        for F in (StartPage, CreatePage, EditPage,ViewPage,SummaryPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -54,8 +63,7 @@ class InventoryMGMT(tk.Tk):
         
     def show_frame(self, cont):
         frame = self.frames[cont]
-        frame.tkraise()
-        
+        frame.tkraise()       
 
 #Start Page        
 class StartPage(tk.Frame):
@@ -74,6 +82,9 @@ class StartPage(tk.Frame):
         view_button = tk.Button(self, text ="View Entry",
                             command=lambda: controller.show_frame(ViewPage))
         view_button.pack()
+        summary_button =tk.Button(self,text="View Summary",
+                                  command=lambda:controller.show_frame(SummaryPage))
+        summary_button.pack()
         quit_button=tk.Button(self,text="Quit",
                               command=lambda:controller.destroy())
         quit_button.pack()
@@ -112,12 +123,16 @@ class CreatePage(tk.Frame):
             ship.delete(0,END)
             location_entry=location.get()
             location.delete(0,END)
+            
             #Error Catch if Serial or Tag is blank, or if computer exists already no change
             if (serial_entry != '')and (tag_entry != ''):
                 try:
                     cur.execute("Insert INTO Computers(Serial,Tag,ship,location) Values(?,?,?,?);",
                                 (serial_entry,tag_entry,ship_entry,location_entry))
+                    
                     clickCreate()
+                    writecreate(serial_entry,tag_entry)
+                    
                 except:
                     existEntry()
                     
@@ -224,9 +239,18 @@ class ViewPage(tk.Frame):
                     if len(rows)== 0:
                         notexistEntry()
                     else:
-                            for row in rows:
-                                print row
-                            displayInfo(rows)               
+                        global output
+                        convert=rows[0]
+                        
+                        ttserial= "Serial: "+convert[0]
+                        tttag = "\nTag: " + convert[1]
+                        ttship="\nShip: " + str(convert[2])
+                        ttlocation="\nLocation: " +str(convert[3])
+                        
+                        output= ttserial+tttag+ttship+ttlocation
+                    
+                        
+                        displayInfo()                 
                 except:
                     notexistEntry()   
             else:
@@ -243,6 +267,33 @@ class ViewPage(tk.Frame):
                             command=lambda: controller.show_frame(StartPage))
         return_button.grid(row=5,column=2)
     
+
+class SummaryPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="Summary", font=LARGE_FONT)
+        label.grid(row=0,pady=10,padx=10)
+
+        cur.execute("SELECT * FROM Computers ORDER BY tag,location")
+        rows = cur.fetchall()
+        alloutput=""
+        for row in rows:
+            
+            ttserial= "Serial: "+row[0]
+            tttag = " Tag: " + row[1]
+            ttship=" Ship: " + str(row[2])
+            ttlocation=" Location: " +str(row[3])
+            
+            output= ttserial+tttag+ttship+ttlocation+"\n"
+            alloutput+=output
+        
+        information= tk.Label(self,text=alloutput)
+        information.grid(row=1,column=0)
+
+        return_button = tk.Button(self, text="Return To Menu",
+                            command=lambda: controller.show_frame(StartPage))
+        return_button.grid(row=5,column=0)
+        
 
 app = InventoryMGMT()
 app.mainloop()
