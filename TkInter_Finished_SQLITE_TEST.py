@@ -2,10 +2,8 @@ import Tkinter as tk
 from Tkinter import *
 import sqlite3 as lite
 from tkMessageBox import*
-import datetime
-import time
-import sys
-aa
+import datetime,time,sys,ttk
+
 #Filler Function
 
 def say_hello():
@@ -41,14 +39,18 @@ def displayInfo():
 #write create event to changelog
 def writecreate(serial,tag):
     today = str(datetime.date.today())
+    currenttime= str(datetime.datetime.now().time())
     changelog=open('testchange.txt','a')
-    changelog.write("CREATE COMPUTER SERIAL: " + serial+" TAG: " +tag+" DATE: "+today+"\n")
+    changelog.write("CREATE COMPUTER SERIAL: " + serial+" TAG: " +tag+" DATE: "+today+
+                    " TIME: "+currenttime+"\n")
     changelog.close()
 def writeEdit(serial,tag,ship,location):
     today = str(datetime.date.today())
+    currenttime= str(datetime.datetime.now().time())
     changelog=open('testchange.txt','a')
     changelog.write("EDIT COMPUTER SERIAL: " + serial+" TAG: " +tag+
-                    " SHIP: "+str(ship)+" LOCATION: "+str(location)+" DATE: "+today+"\n")
+                    " SHIP: "+str(ship)+" LOCATION: "+str(location)+" DATE: "+today+
+                    " TIME: "+currenttime+"\n")
     changelog.close()
 
 
@@ -115,11 +117,18 @@ class CreatePage(tk.Frame):
 
         serial = Entry(self)
         tag = Entry(self)
-        ship =Entry(self)
-        location = Entry(self)
+        shipmonth =ttk.Combobox(self,width=5)
+        shipday=ttk.Combobox(self,width=5)
+        shipyear=ttk.Combobox(self,width=5)
+        location = ttk.Combobox(self,width=5)
+        location['values']= ('B1','B2','1','2','3','4','5')
         serial.grid(row=2,column=1)
         tag.grid(row=3,column=1)
-        ship.grid(row=4,column=1)
+        
+        shipmonth.grid(row=4,column=1)
+        shipday.grid(row=4,column=2)
+        shipyear.grid(row=4,column=3)
+        
         location.grid(row=5,column=1)
         #Function to create Computer entry, and store it in database
         
@@ -129,8 +138,10 @@ class CreatePage(tk.Frame):
             serial.delete(0,END)
             tag_entry=tag.get()
             tag.delete(0,END)
-            ship_entry=ship.get()
-            ship.delete(0,END)
+            ship_entry=shipmonth.get()+shipday.get()+shipyear.get()
+            shipmonth.delete(0,END)
+            shipday.delete(0,END)
+            shipyear.delete(0,END)
             location_entry=location.get()
             location.delete(0,END)
             
