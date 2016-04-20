@@ -1,7 +1,7 @@
 import sqlite3 as lite
 import sys
 
-con = lite.connect('test.db')
+con = lite.connect('Computers.db')
 
 with con:
     
@@ -11,3 +11,4 @@ with con:
     rows = cur.fetchall()
     for row in rows:
         print row
+    
