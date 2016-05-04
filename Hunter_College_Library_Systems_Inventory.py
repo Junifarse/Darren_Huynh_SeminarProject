@@ -1,8 +1,21 @@
+#import modules
 import Tkinter as tk
 from Tkinter import *
 import sqlite3 as lite
 from tkMessageBox import*
 import datetime,time,sys,ttk,os.path
+#list of months/days/years/locations
+
+months_list=[' - ','Jan','Feb','Mar','Apr','May','Jun','Jul',
+                            'Aug','Sep','Oct','Nov','Dec']
+days_list = [' - ','1','2','3','4','5','6','7','8','9',
+                           '10','11','12','13','14','15','16'
+                           ,'17','18','19','20','21','22','23','24','25',
+                           '26','27','28','29','30','31']
+years_list =[' - ','2016','2015','2014','2013','2012','2011',
+                            '2010','2009','2008','2007','2006','2005','2004',
+                            '2003','2002','2001','2000']
+locations_list=[' - ','B1','B2','1','2','3','4','5']
 
 #Checks for Computers Database
 if os.path.isfile('Computers.db'):
@@ -17,21 +30,18 @@ else:
             
         cur = con.cursor()    
         cur.execute("CREATE TABLE Computers(Serial TEXT NOT NULL,Tag TEXT  NOT NULL, Ship INT, Location INT, PRIMARY KEY(Serial,Tag));")
-
+##Dialog Boxes
    
 #Confirmation/Message Boxes Popup
 def clickCreate():
     showinfo(title='Entry Created',message="Entry Created")
 def clickEdit():
-    showinfo(title='Entry Edited',message="Entry Edited")
-    
+    showinfo(title='Entry Edited',message="Entry Edited")    
 #Empty Entry Popup
 def emptyEntry():
-
     showwarning(title="Error",message="Enter Serial/Tag")
 #Computer Exists Error Popup
 def existEntry():
-
     showwarning(title="Error",message="Computer Exists Already")
 #Computer does not exist Error Popup
 def notexistEntry():
@@ -39,7 +49,9 @@ def notexistEntry():
 #Display Specific Computer Information from View Entry
 def displayInfo():
     showinfo(title='Information',message=output)
-#Generate Summary Page
+    
+#Generate Dynamic Summary Page
+
 def summary():
     class Summary(Tk):
         def __init__(self, parent):
@@ -74,7 +86,8 @@ def summary():
             locationlabel.grid(row=0,column=3)
     window=Summary(None)
     window.mainloop()
-    
+
+##Changelog Writing   
    
 #write create event to changelog
 def writecreate(serial,tag):
@@ -96,8 +109,8 @@ def writeEdit(serial,tag,ship,location):
 
 
 
-LARGE_FONT= ("Verdana", 12)
-#Linked Frame
+LARGE_FONT= ("Times New Roman", 12)
+##Linked Frame Container/Object, Preloads all the Entry options upon initiation
 class InventoryMGMT(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -107,6 +120,7 @@ class InventoryMGMT(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
+        #All the "Pages" are included here for preloading. Include future pages in this list
         for F in (StartPage, CreatePage, EditPage,EditEntryPage,ViewPage):
             frame = F(container, self)
             self.frames[F] = frame
@@ -118,13 +132,14 @@ class InventoryMGMT(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()       
 
-#Start Page        
+##Start Page/Menu Contains all the buttons to access other pages     
 class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
-        
-        label = tk.Label(self, text="Inventory Management", font=LARGE_FONT)
+        frameOne = tk.LabelFrame(self,font=LARGE_FONT)
+        frameOne.pack()
+        label = tk.Label(frameOne, text="Hunter College Library Inventory Management", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
         create_button = tk.Button(self, text="Create Entry",
                             command=lambda: controller.show_frame(CreatePage))
@@ -144,42 +159,35 @@ class StartPage(tk.Frame):
 
         
 
-#Create Entry Page
+##Create Entry Page; Data entry
 class CreatePage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        stepOne = tk.LabelFrame(self, text=" Create Entry: ",font=LARGE_FONT)
-        stepOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
+        frameOne = tk.LabelFrame(self, text=" Create Entry: ",font=LARGE_FONT)
+        frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
-        Label(stepOne,text="Serial Number").grid(row=1)
-        Label(stepOne,text="Tag Number").grid(row=2)
-        Label(stepOne,text="Shipdate").grid(row=3)
-        Label(stepOne,text="Location").grid(row=4)
-        serial = Entry(stepOne)
-        tag = Entry(stepOne)
+        Label(frameOne,text="Serial Number").grid(row=1)
+        Label(frameOne,text="Tag Number").grid(row=2)
+        Label(frameOne,text="Shipdate").grid(row=3)
+        Label(frameOne,text="Location").grid(row=4)
+        serial = Entry(frameOne)
+        tag = Entry(frameOne)
         #Months Entry
-        shipmonth =ttk.Combobox(stepOne,width=15)
-        
-        shipmonth['values']=(' - ','Jan','Feb','Mar','Apr','May','Jun','Jul',
-                            'Aug','Sep','Oct','Nov','Dec')
+        shipmonth =ttk.Combobox(frameOne,width=15)
+        shipmonth['values']=months_list
         shipmonth.current(0)
-        shipday=ttk.Combobox(stepOne,width=5)
+        shipday=ttk.Combobox(frameOne,width=5)
         #Day Entry
-        shipday['values']=(' - ','1','2','3','4','5','6','7','8','9',
-                           '10','11','12','13','14','15','16'
-                           ,'17','18','19','20','21','22','23','24','25',
-                           '26','27','28','29','30','31')
+        shipday['values']=days_list
         shipday.current(0)
         #Year Entry
-        shipyear=ttk.Combobox(stepOne,width=5)
-        shipyear['values']=(' - ','2016','2015','2014','2013','2012','2011',
-                            '2010','2009','2008','2007','2006','2005','2004',
-                            '2003','2002','2001','2000')
+        shipyear=ttk.Combobox(frameOne,width=5)
+        shipyear['values']=years_list
         shipyear.current(0)
         #Location Entry "Floors"
-        location = ttk.Combobox(stepOne,width=5)
-        location['values']= (' - ','B1','B2','1','2','3','4','5')
+        location = ttk.Combobox(frameOne,width=5)
+        location['values']= locations_list
         location.current(0)
         
         serial.grid(row=1,column=1)
@@ -216,19 +224,19 @@ class CreatePage(tk.Frame):
             else:
                 emptyEntry()
                 
-        #Buttons
-        stepTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
-        stepTwo.grid(row=0, column=8,sticky='W', \
+        #Menu Buttons
+        frameTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
+        frameTwo.grid(row=0, column=8,sticky='W', \
                  padx=5, pady=5, ipadx=5, ipady=5)
-        enter_button= tk.Button(stepOne, text ="Enter",command = create_entry)
+        enter_button= tk.Button(frameOne, text ="Enter",command = create_entry)
         enter_button.grid(row=4,column=5)
-        edit_button = tk.Button(stepTwo, text="Edit Entry",
+        edit_button = tk.Button(frameTwo, text="Edit Entry",
                            command=lambda: controller.show_frame(EditPage))
         edit_button.grid(row=3,column=2)
-        view_button= tk.Button(stepTwo, text="View Entry",
+        view_button= tk.Button(frameTwo, text="View Entry",
                                command=lambda:controller.show_frame(ViewPage))
         view_button.grid(row=4,column=2)
-        return_button = tk.Button(stepTwo, text="Return To Menu",
+        return_button = tk.Button(frameTwo, text="Return To Menu",
                             command=lambda: controller.show_frame(StartPage))
         return_button.grid(row=5,column=2)
 
@@ -238,16 +246,16 @@ class EditPage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        stepOne = tk.LabelFrame(self, text=" Edit Entry: ",font=LARGE_FONT)
-        stepOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
+        frameOne = tk.LabelFrame(self, text=" Edit Entry: ",font=LARGE_FONT)
+        frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
-        Label(stepOne,text="Serial Number").grid(row=2)
-        Label(stepOne,text='AND').grid(row=3)
-        Label(stepOne,text="Tag Number").grid(row=4)
-        serial = Entry(stepOne)
-        tag = Entry(stepOne)
-        ship =Entry(stepOne)
-        location = Entry(stepOne)
+        Label(frameOne,text="Serial Number").grid(row=2)
+        Label(frameOne,text='AND').grid(row=3)
+        Label(frameOne,text="Tag Number").grid(row=4)
+        serial = Entry(frameOne)
+        tag = Entry(frameOne)
+        ship =Entry(frameOne)
+        location = Entry(frameOne)
         serial.grid(row=2,column=1)
         tag.grid(row=4,column=1)
         
@@ -258,7 +266,7 @@ class EditPage(tk.Frame):
             tag_entry=tag.get()
             tag.delete(0,END)
             
-            #Error Catch if Serial or Tag is blank, or if computer exists already no change
+            #Error Catch if Serial or Tag is blank, or if computer doesn't exist. else opens edit dialog
             if (serial_entry != '')and (tag_entry != ''):
                 try:
                     cur.execute("SELECT * from Computers where Serial=? and Tag=?",(serial_entry,tag_entry))
@@ -274,60 +282,54 @@ class EditPage(tk.Frame):
             else:
                 emptyEntry()
 
-        stepTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
-        stepTwo.grid(row=0, column=9,sticky='W', \
+        frameTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
+        frameTwo.grid(row=0, column=9,sticky='W', \
                  padx=5, pady=5, ipadx=5, ipady=5)
-        #Buttons
-        enter_button= tk.Button(stepOne, text ="Enter",command = check_entry)
+        #Menu Buttons
+        enter_button= tk.Button(frameOne, text ="Enter",command = check_entry)
         enter_button.grid(row=4,column=5)
     
-        create_button = tk.Button(stepTwo, text="Create Entry",
+        create_button = tk.Button(frameTwo, text="Create Entry",
                             command=lambda: controller.show_frame(CreatePage))
         create_button.grid(row=3,column=2)
 
-        view_button= tk.Button(stepTwo, text="View Entry",
+        view_button= tk.Button(frameTwo, text="View Entry",
                                command=lambda:controller.show_frame(ViewPage))
         view_button.grid(row=4,column=2)
 
-        return_button = tk.Button(stepTwo, text="Return To Menu",
+        return_button = tk.Button(frameTwo, text="Return To Menu",
                             command=lambda: controller.show_frame(StartPage))
         return_button.grid(row=5,column=2)
+##Actual Edit Dialog. Data Entered will be changed upon user confirmation.
 
 class EditEntryPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        stepOne = tk.LabelFrame(self, text=" Edit Entry: *Items left Blank will be Unchanged",font=LARGE_FONT)
-        stepOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
+        frameOne = tk.LabelFrame(self, text=" Edit Entry: *Items left Blank will be Unchanged",font=LARGE_FONT)
+        frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
         
-        Label(stepOne,text="Tag Number").grid(row=3)
-        Label(stepOne,text="Shipdate").grid(row=4)
-        Label(stepOne,text="Location").grid(row=5)
-        tag = Entry(stepOne)
+        Label(frameOne,text="Tag Number").grid(row=3)
+        Label(frameOne,text="Shipdate").grid(row=4)
+        Label(frameOne,text="Location").grid(row=5)
+        tag = Entry(frameOne)
         
         tag.grid(row=3,column=1)
         #Months Entry
-        shipmonth =ttk.Combobox(stepOne,width=15)
-        
-        shipmonth['values']=(' - ','Jan','Feb','Mar','Apr','May','Jun','Jul',
-                            'Aug','Sep','Oct','Nov','Dec')
+        shipmonth =ttk.Combobox(frameOne,width=15)
+        shipmonth['values']=months_list
         shipmonth.current(0)
-        shipday=ttk.Combobox(stepOne,width=5)
+        shipday=ttk.Combobox(frameOne,width=5)
         #Day Entry
-        shipday['values']=(' - ','1','2','3','4','5','6','7','8','9',
-                           '10','11','12','13','14','15','16'
-                           ,'17','18','19','20','21','22','23','24','25',
-                           '26','27','28','29','30','31')
+        shipday['values']=days_list
         shipday.current(0)
         #Year Entry
-        shipyear=ttk.Combobox(stepOne,width=5)
-        shipyear['values']=(' - ','2016','2015','2014','2013','2012','2011',
-                            '2010','2009','2008','2007','2006','2005','2004',
-                            '2003','2002','2001','2000')
+        shipyear=ttk.Combobox(frameOne,width=5)
+        shipyear['values']=years_list
         shipyear.current(0)
         #Location Entry "Floors"
-        location = ttk.Combobox(stepOne,width=5)
-        location['values']= (' - ','B1','B2','1','2','3','4','5')
+        location = ttk.Combobox(frameOne,width=5)
+        location['values']=locations_list
         location.current(0)
         shipmonth.grid(row=4,column=1)
         shipday.grid(row=4,column=2)
@@ -362,7 +364,7 @@ class EditEntryPage(tk.Frame):
             controller.show_frame(EditPage)
 
 
-        enter_button= tk.Button(stepOne, text ="Enter",command = check_entry)
+        enter_button= tk.Button(frameOne, text ="Enter",command = check_entry)
         enter_button.grid(row=5,column=2)
 
 
@@ -371,15 +373,15 @@ class EditEntryPage(tk.Frame):
 class ViewPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        stepOne = tk.LabelFrame(self, text=" View Entry: ",font=LARGE_FONT)
-        stepOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
+        frameOne = tk.LabelFrame(self, text=" View Entry: ",font=LARGE_FONT)
+        frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
-        Label(stepOne,text="Serial Number").grid(row=2)
-        Label(stepOne,text='OR').grid(row=3)
-        Label(stepOne,text="Tag Number").grid(row=4)
+        Label(frameOne,text="Serial Number").grid(row=2)
+        Label(frameOne,text='OR').grid(row=3)
+        Label(frameOne,text="Tag Number").grid(row=4)
         
-        serial = Entry(stepOne)
-        tag = Entry(stepOne)
+        serial = Entry(frameOne)
+        tag = Entry(frameOne)
         serial.grid(row=2,column=1)
         tag.grid(row=4,column=1)
         
@@ -424,19 +426,19 @@ class ViewPage(tk.Frame):
                     notexistEntry()   
             else:
                 emptyEntry()
-        #Buttons
-        stepTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
-        stepTwo.grid(row=0, column=8,sticky='W', \
+        #Menu Buttons
+        frameTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
+        frameTwo.grid(row=0, column=8,sticky='W', \
                  padx=5, pady=5, ipadx=5, ipady=5)
-        enter_button= tk.Button(stepOne, text ="Enter",command = view_entry)
+        enter_button= tk.Button(frameOne, text ="Enter",command = view_entry)
         enter_button.grid(row=4,column=2)
-        create_button = tk.Button(stepTwo, text="Create Entry",
+        create_button = tk.Button(frameTwo, text="Create Entry",
                             command=lambda: controller.show_frame(CreatePage))
         create_button.grid(row=3,column=2)
-        edit_button = tk.Button(stepTwo, text="Edit Entry",
+        edit_button = tk.Button(frameTwo, text="Edit Entry",
                             command=lambda: controller.show_frame(EditPage))
         edit_button.grid(row=4,column=2)
-        return_button = tk.Button(stepTwo, text="Return To Menu",
+        return_button = tk.Button(frameTwo, text="Return To Menu",
                             command=lambda: controller.show_frame(StartPage))
         return_button.grid(row=5,column=2)
     
