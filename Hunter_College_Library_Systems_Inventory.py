@@ -4,7 +4,7 @@ from Tkinter import *
 import sqlite3 as lite
 from tkMessageBox import*
 import datetime,time,sys,ttk,os.path
-#list of months/days/years/locations
+##list of months/days/years/locations
 
 months_list=[' - ','Jan','Feb','Mar','Apr','May','Jun','Jul',
                             'Aug','Sep','Oct','Nov','Dec']
@@ -12,9 +12,11 @@ days_list = [' - ','1','2','3','4','5','6','7','8','9',
                            '10','11','12','13','14','15','16'
                            ,'17','18','19','20','21','22','23','24','25',
                            '26','27','28','29','30','31']
+#add years here
 years_list =[' - ','2016','2015','2014','2013','2012','2011',
                             '2010','2009','2008','2007','2006','2005','2004',
                             '2003','2002','2001','2000']
+#add locations here
 locations_list=[' - ','B1','B2','1','2','3','4','5']
 
 #Checks for Computers Database
@@ -23,12 +25,13 @@ if os.path.isfile('Computers.db'):
     with con:
         cur = con.cursor()
 else:
-    #Creates it if its missing
+    #Creates it if its missing; rename db here
     con = lite.connect('Computers.db')
 
     with con:
             
-        cur = con.cursor()    
+        cur = con.cursor()
+        #edit table parameters here, ex: model
         cur.execute("CREATE TABLE Computers(Serial TEXT NOT NULL,Tag TEXT  NOT NULL, Ship INT, Location INT, PRIMARY KEY(Serial,Tag));")
 ##Dialog Boxes
    
@@ -57,6 +60,9 @@ def summary():
         def __init__(self, parent):
             Tk.__init__(self, parent)
             self.title("Summary Page")
+            frameOne = tk.LabelFrame(self)
+            frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
+                 padx=10, pady=10, ipadx=10, ipady=10)
             cur.execute("SELECT * FROM Computers ORDER BY tag,location")
             rows = cur.fetchall()
             serialgrid=''
@@ -68,21 +74,21 @@ def summary():
                 taggrid+=row[1]+'\n'
                 shipgrid+=str(row[2])+'\n'
                 locationgrid+=str(row[3])+'\n'
-            seriallabel=tk.Label(self,text='Serial',font=LARGE_FONT)
+            seriallabel=tk.Label(frameOne,text='Serial',font=LARGE_FONT)
             seriallabel.grid(row=0,column=0)
-            serialinformation = tk.Label(self,text=serialgrid)
+            serialinformation = tk.Label(frameOne,text=serialgrid)
             serialinformation.grid(row=1,column=0)
-            taginformation = tk.Label(self,text=taggrid)
+            taginformation = tk.Label(frameOne,text=taggrid)
             taginformation.grid(row=1,column=1)
-            taglabel=tk.Label(self,text='CUNYTAG',font=LARGE_FONT)
+            taglabel=tk.Label(frameOne,text='CUNYTAG',font=LARGE_FONT)
             taglabel.grid(row=0,column=1)
-            shipinformation = tk.Label(self,text=shipgrid)
+            shipinformation = tk.Label(frameOne,text=shipgrid)
             shipinformation.grid(row=1,column=2)
-            shiplabel=tk.Label(self,text='Shipdate',font=LARGE_FONT)
+            shiplabel=tk.Label(frameOne,text='Shipdate',font=LARGE_FONT)
             shiplabel.grid(row=0,column=2)
-            locationinformation = tk.Label(self,text=locationgrid)
+            locationinformation = tk.Label(frameOne,text=locationgrid)
             locationinformation.grid(row=1,column=3)
-            locationlabel=tk.Label(self,text='Location',font=LARGE_FONT)
+            locationlabel=tk.Label(frameOne,text='Location',font=LARGE_FONT)
             locationlabel.grid(row=0,column=3)
     window=Summary(None)
     window.mainloop()
@@ -276,11 +282,11 @@ class CreatePage(tk.Frame):
             tag_entry=tag.get()
             tag.delete(0,END)
             ship_entry=shipmonth.get()+'-'+shipday.get()+'-'+shipyear.get()
-            shipmonth.delete(0,END)
-            shipday.delete(0,END)
-            shipyear.delete(0,END)
+            shipmonth.current(0)
+            shipday.current(0)
+            shipyear.current(0)
             location_entry=location.get()
-            location.delete(0,END)
+            location.current(0)
            
             
             #Error Catch if Serial or Tag is blank, or if computer exists already no change
@@ -290,6 +296,7 @@ class CreatePage(tk.Frame):
                                 (serial_entry,tag_entry,ship_entry,location_entry))
                     clickCreate()
                     writecreate(serial_entry,tag_entry)
+                    lambda:controller.show_frame(CreatePage)
                 except:
                     existEntry()                    
             else:
