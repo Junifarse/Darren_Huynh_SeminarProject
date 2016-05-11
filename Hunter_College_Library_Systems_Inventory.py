@@ -87,6 +87,65 @@ def summary():
     window=Summary(None)
     window.mainloop()
 
+def admin():
+    class Admin(Tk):
+        def __init__(self,parent):
+            Tk.__init__(self,parent)
+            self.title("Admin Login")
+            
+    question=askokcancel(title='Warning',message= 'Only Authorized Users Should Use This')
+    if question is True:
+        admin=Toplevel()
+        admin.title('Admin Login')
+        def checklogin():
+            user=adminuserentry.get()
+            password=adminpassentry.get()
+            def delete_entry():
+                serial_entry=serial.get()
+                serial.delete(0,END)
+                cur.execute("SELECT * from Computers where Serial=?",(serial_entry,))
+                checkerino= cur.fetchall()
+                
+                if len(checkerino)!= 0:
+                    cur.execute("DELETE FROM Computers WHERE Serial =?",(serial_entry,))
+                    showinfo(title="Delete Complete", message="Entry Deleted")
+                    writeDelete(serial_entry)
+                    
+                else:
+                    notexistEntry()
+                    
+            if (user  == 'Poseidon') and (password == 'Trident'):
+                admin.destroy()
+                adminfunction=Toplevel()
+                adminfunction.title=('Admin Functions')
+                Label(adminfunction,text="Serial Number").grid(row=0,column=0)
+                serial = Entry(adminfunction)
+                serial.grid(row=0,column=1)
+
+                delete_button=tk.Button(adminfunction,text="Delete",
+                                        command=delete_entry).grid(
+                                            row=1,column=0)
+                quit_button=tk.Button(adminfunction,text="Quit",
+                              command=lambda :adminfunction.destroy()).grid(
+                                  row=1,column=1)
+            else:
+                    showwarning(title='Invalid Username/Password',message=
+                                'Invalid Username or Password')
+                    
+        adminuserlabel=Label(admin,text='Admin User: ').grid(row=0,column=0)
+        adminuserentry=Entry(admin)
+        adminuserentry.grid(row=0,column=1)
+        adminpasslabel=Label(admin,text='Password: ').grid(row=1,column=0)
+        adminpassentry=Entry(admin,show="*")
+        adminpassentry.grid(row=1,column=1)
+        login_button=tk.Button(admin,text="Login",
+                               command =lambda :checklogin()).grid(
+                                   row=0,column=2)
+        quit_button=tk.Button(admin,text="Quit",
+                              command=lambda :admin.destroy()).grid(
+                                  row=1,column=2)
+
+
 ##Changelog Writing   
    
 #write create event to changelog
@@ -106,6 +165,13 @@ def writeEdit(serial,tag,ship,location):
                     " SHIP: "+str(ship)+" LOCATION: "+str(location)+" DATE: "+today+
                     " TIME: "+currenttime+"\n")
     changelog.close()
+    
+def writeDelete(serial):
+    today = str(datetime.date.today())
+    currenttime= str(datetime.datetime.now().time())
+    changelog=open('changelog.txt','a')
+    changelog.write("DELETE COMPUTER SERIAL: " + serial +" DATE: "+today+
+                    " TIME: "+currenttime+"\n")  
 
 
 
@@ -153,6 +219,11 @@ class StartPage(tk.Frame):
         summary_button =tk.Button(self,text="View Summary",
                                   command=summary)
         summary_button.pack()
+        admin_button = tk.Button(self,text = "Admin Login",
+                                 command = admin)
+        admin_button.pack()
+        quit_button=tk.Button(self,text="Quit",
+                              command=lambda:controller.destroy())
         quit_button=tk.Button(self,text="Quit",
                               command=lambda:controller.destroy())
         quit_button.pack()
