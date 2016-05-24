@@ -1,18 +1,24 @@
+##Author: Darren Huynh for Hunter College CSCI 233 Seminar Project
+##Description: Inventory Management Program
+##Credits: SeaofBTC for Linked Frames Code
+
+
 #import modules
+#importing modules
 import Tkinter as tk
 from Tkinter import *
 import sqlite3 as lite
 from tkMessageBox import*
 import datetime,time,sys,ttk,os.path
 ##list of months/days/years/locations
-
+#Change default value by modifying first element in each list
 months_list=[' - ','Jan','Feb','Mar','Apr','May','Jun','Jul',
                             'Aug','Sep','Oct','Nov','Dec']
 days_list = [' - ','1','2','3','4','5','6','7','8','9',
                            '10','11','12','13','14','15','16'
                            ,'17','18','19','20','21','22','23','24','25',
                            '26','27','28','29','30','31']
-#add years here
+#edit/add years here
 years_list =[' - ','2016','2015','2014','2013','2012','2011',
                             '2010','2009','2008','2007','2006','2005','2004',
                             '2003','2002','2001','2000']
@@ -27,12 +33,11 @@ if os.path.isfile('Computers.db'):
 else:
     #Creates it if its missing; rename db here
     con = lite.connect('Computers.db')
-
-    with con:
-            
+    with con:         
         cur = con.cursor()
-        #edit table parameters here, ex: model
+        #edit table parameters here, ex: Model TEXT,
         cur.execute("CREATE TABLE Computers(Serial TEXT NOT NULL,Tag TEXT  NOT NULL, Ship INT, Location INT, PRIMARY KEY(Serial,Tag));")
+
 ##Dialog Boxes
    
 #Confirmation/Message Boxes Popup
@@ -63,17 +68,22 @@ def summary():
             frameOne = tk.LabelFrame(self)
             frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
+            #fetches information from all computers, ordered by tag and location
             cur.execute("SELECT * FROM Computers ORDER BY tag,location")
             rows = cur.fetchall()
+            #enter additional information here as a blank string
             serialgrid=''
             taggrid=''
             shipgrid=''
             locationgrid=''
+            #converts the "row information" from the fetch and puts it into a string
+            #and is displayed
             for row in rows:
                 serialgrid+=row[0]+'\n'
                 taggrid+=row[1]+'\n'
                 shipgrid+=str(row[2])+'\n'
                 locationgrid+=str(row[3])+'\n'
+            #formatting information/labels mix and match grids here
             seriallabel=tk.Label(frameOne,text='Serial',font=LARGE_FONT)
             seriallabel.grid(row=0,column=0)
             serialinformation = tk.Label(frameOne,text=serialgrid)
@@ -98,26 +108,29 @@ def admin():
         def __init__(self,parent):
             Tk.__init__(self,parent)
             self.title("Admin Login")
-            
+    #cautions the user that only authorized users should use this        
     question=askokcancel(title='Warning',message= 'Only Authorized Users Should Use This')
     if question is True:
+        #create login prompt
         admin=Toplevel()
         admin.title('Admin Login')
         def checklogin():
             user=adminuserentry.get()
             password=adminpassentry.get()
+            #delete entry function
             def delete_entry():
                 serial_entry=serial.get()
                 serial.delete(0,END)
                 cur.execute("SELECT * from Computers where Serial=?",(serial_entry,))
                 checkerino= cur.fetchall()
-                
+                #if computer exists, delete and then add to changelog
                 if len(checkerino)!= 0:
                     cur.execute("DELETE FROM Computers WHERE Serial =?",(serial_entry,))
                     showinfo(title="Delete Complete", message="Entry Deleted")
                     writeDelete(serial_entry)
                     
                 else:
+                    #if computer does not exist
                     notexistEntry()
                     
             if (user  == 'Poseidon') and (password == 'Trident'):
@@ -135,9 +148,10 @@ def admin():
                               command=lambda :adminfunction.destroy()).grid(
                                   row=1,column=1)
             else:
+                #incorrect login shows warning
                     showwarning(title='Invalid Username/Password',message=
                                 'Invalid Username or Password')
-                    
+        #labels and buttons            
         adminuserlabel=Label(admin,text='Admin User: ').grid(row=0,column=0)
         adminuserentry=Entry(admin)
         adminuserentry.grid(row=0,column=1)
@@ -199,7 +213,7 @@ class InventoryMGMT(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(StartPage)
         
-        
+    #show frame function    
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()       
@@ -209,10 +223,12 @@ class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
+        #frame one for easier widget management
         frameOne = tk.LabelFrame(self,font=LARGE_FONT)
         frameOne.pack()
         label = tk.Label(frameOne, text="Hunter College Library Inventory Management", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
+        #add buttons below, in consequent order because pack is used here
         create_button = tk.Button(self, text="Create Entry",
                             command=lambda: controller.show_frame(CreatePage))
         create_button.pack()
@@ -241,6 +257,7 @@ class CreatePage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        #frame one for easier widget management
         frameOne = tk.LabelFrame(self, text=" Create Entry: ",font=LARGE_FONT)
         frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
@@ -302,7 +319,7 @@ class CreatePage(tk.Frame):
             else:
                 emptyEntry()
                 
-        #Menu Buttons
+        #Menu Buttons in a second frame for easy button management in a second frame for easy button management
         frameTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
         frameTwo.grid(row=0, column=8,sticky='W', \
                  padx=5, pady=5, ipadx=5, ipady=5)
@@ -324,6 +341,7 @@ class EditPage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        #frame one for easier widget management
         frameOne = tk.LabelFrame(self, text=" Edit Entry: ",font=LARGE_FONT)
         frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
@@ -363,7 +381,7 @@ class EditPage(tk.Frame):
         frameTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
         frameTwo.grid(row=0, column=9,sticky='W', \
                  padx=5, pady=5, ipadx=5, ipady=5)
-        #Menu Buttons
+        #Menu Buttons in a second frame for easy button management
         enter_button= tk.Button(frameOne, text ="Enter",command = check_entry)
         enter_button.grid(row=4,column=5)
     
@@ -383,10 +401,11 @@ class EditPage(tk.Frame):
 class EditEntryPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        #frame one for easier widget management
         frameOne = tk.LabelFrame(self, text=" Edit Entry: *Items left Blank will be Unchanged",font=LARGE_FONT)
         frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
-        
+        #labels
         Label(frameOne,text="Tag Number").grid(row=3)
         Label(frameOne,text="Shipdate").grid(row=4)
         Label(frameOne,text="Location").grid(row=5)
@@ -451,9 +470,11 @@ class EditEntryPage(tk.Frame):
 class ViewPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+        #frame one for easier widget management
         frameOne = tk.LabelFrame(self, text=" View Entry: ",font=LARGE_FONT)
         frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
+        #labels
         Label(frameOne,text="Serial Number").grid(row=2)
         Label(frameOne,text='OR').grid(row=3)
         Label(frameOne,text="Tag Number").grid(row=4)
@@ -504,7 +525,7 @@ class ViewPage(tk.Frame):
                     notexistEntry()   
             else:
                 emptyEntry()
-        #Menu Buttons
+        #Menu Buttons in a second frame for easy button management
         frameTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
         frameTwo.grid(row=0, column=8,sticky='W', \
                  padx=5, pady=5, ipadx=5, ipady=5)
