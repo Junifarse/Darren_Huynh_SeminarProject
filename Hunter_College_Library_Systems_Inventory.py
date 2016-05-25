@@ -65,7 +65,7 @@ def summary():
         def __init__(self, parent):
             Tk.__init__(self, parent)
             self.title("Summary Page")
-            frameOne = tk.LabelFrame(self)
+            frameOne = Tk.LabelFrame(self)
             frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
             #fetches information from all computers, ordered by tag and location
@@ -84,21 +84,21 @@ def summary():
                 shipgrid+=str(row[2])+'\n'
                 locationgrid+=str(row[3])+'\n'
             #formatting information/labels mix and match grids here
-            seriallabel=tk.Label(frameOne,text='Serial',font=LARGE_FONT)
+            seriallabel=Tk.Label(frameOne,text='Serial',font=LARGE_FONT)
             seriallabel.grid(row=0,column=0)
-            serialinformation = tk.Label(frameOne,text=serialgrid)
+            serialinformation = Tk.Label(frameOne,text=serialgrid)
             serialinformation.grid(row=1,column=0)
-            taginformation = tk.Label(frameOne,text=taggrid)
+            taginformation = Tk.Label(frameOne,text=taggrid)
             taginformation.grid(row=1,column=1)
-            taglabel=tk.Label(frameOne,text='CUNYTAG',font=LARGE_FONT)
+            taglabel=Tk.Label(frameOne,text='CUNYTAG',font=LARGE_FONT)
             taglabel.grid(row=0,column=1)
-            shipinformation = tk.Label(frameOne,text=shipgrid)
+            shipinformation = Tk.Label(frameOne,text=shipgrid)
             shipinformation.grid(row=1,column=2)
-            shiplabel=tk.Label(frameOne,text='Shipdate',font=LARGE_FONT)
+            shiplabel=Tk.Label(frameOne,text='Shipdate',font=LARGE_FONT)
             shiplabel.grid(row=0,column=2)
-            locationinformation = tk.Label(frameOne,text=locationgrid)
+            locationinformation = Tk.Label(frameOne,text=locationgrid)
             locationinformation.grid(row=1,column=3)
-            locationlabel=tk.Label(frameOne,text='Location',font=LARGE_FONT)
+            locationlabel=Tk.Label(frameOne,text='Location',font=LARGE_FONT)
             locationlabel.grid(row=0,column=3)
     window=Summary(None)
     window.mainloop()
@@ -141,10 +141,10 @@ def admin():
                 serial = Entry(adminfunction)
                 serial.grid(row=0,column=1)
 
-                delete_button=tk.Button(adminfunction,text="Delete",
+                delete_button=Tk.Button(adminfunction,text="Delete",
                                         command=delete_entry).grid(
                                             row=1,column=0)
-                quit_button=tk.Button(adminfunction,text="Quit",
+                quit_button=Tk.Button(adminfunction,text="Quit",
                               command=lambda :adminfunction.destroy()).grid(
                                   row=1,column=1)
             else:
@@ -158,10 +158,10 @@ def admin():
         adminpasslabel=Label(admin,text='Password: ').grid(row=1,column=0)
         adminpassentry=Entry(admin,show="*")
         adminpassentry.grid(row=1,column=1)
-        login_button=tk.Button(admin,text="Login",
+        login_button=Tk.Button(admin,text="Login",
                                command =lambda :checklogin()).grid(
                                    row=0,column=2)
-        quit_button=tk.Button(admin,text="Quit",
+        quit_button=Tk.Button(admin,text="Quit",
                               command=lambda :admin.destroy()).grid(
                                   row=1,column=2)
 
@@ -197,11 +197,11 @@ def writeDelete(serial):
 
 LARGE_FONT= ("Times New Roman", 12)
 ##Linked Frame Container/Object, Preloads all the Entry options upon initiation
-class InventoryMGMT(tk.Tk):
+class InventoryMGMT(Tk):
 
     def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
-        container = tk.Frame(self)
+        Tk.__init__(self, *args, **kwargs)
+        container = Tk.Frame(self)
         container.pack(side="top", fill="both", expand = True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
@@ -219,46 +219,46 @@ class InventoryMGMT(tk.Tk):
         frame.tkraise()       
 
 ##Start Page/Menu Contains all the buttons to access other pages     
-class StartPage(tk.Frame):
+class StartPage(Tk.Frame):
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self,parent)
+        Tk.Frame.__init__(self,parent)
         #frame one for easier widget management
-        frameOne = tk.LabelFrame(self,font=LARGE_FONT)
+        frameOne = Tk.LabelFrame(self,font=LARGE_FONT)
         frameOne.pack()
-        label = tk.Label(frameOne, text="Hunter College Library Inventory Management", font=LARGE_FONT)
+        label = Tk.Label(frameOne, text="Hunter College Library Inventory Management", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
         #add buttons below, in consequent order because pack is used here
-        create_button = tk.Button(self, text="Create Entry",
+        create_button = Tk.Button(self, text="Create Entry",
                             command=lambda: controller.show_frame(CreatePage))
         create_button.pack()
-        edit_button = tk.Button(self, text="Edit Entry",
+        edit_button = Tk.Button(self, text="Edit Entry",
                             command=lambda: controller.show_frame(EditPage))
         edit_button.pack()
-        view_button = tk.Button(self, text ="View Entry",
+        view_button = Tk.Button(self, text ="View Entry",
                             command=lambda: controller.show_frame(ViewPage))
         view_button.pack()
-        summary_button =tk.Button(self,text="View Summary",
+        summary_button =Tk.Button(self,text="View Summary",
                                   command=summary)
         summary_button.pack()
-        admin_button = tk.Button(self,text = "Admin Login",
+        admin_button = Tk.Button(self,text = "Admin Login",
                                  command = admin)
         admin_button.pack()
-        quit_button=tk.Button(self,text="Quit",
+        quit_button=Tk.Button(self,text="Quit",
                               command=lambda:controller.destroy())
-        quit_button=tk.Button(self,text="Quit",
+        quit_button=Tk.Button(self,text="Quit",
                               command=lambda:controller.destroy())
         quit_button.pack()
 
         
 
 ##Create Entry Page; Data entry
-class CreatePage(tk.Frame):
+class CreatePage(Tk.Frame):
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        Tk.Frame.__init__(self, parent)
         #frame one for easier widget management
-        frameOne = tk.LabelFrame(self, text=" Create Entry: ",font=LARGE_FONT)
+        frameOne = Tk.LabelFrame(self, text=" Create Entry: ",font=LARGE_FONT)
         frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
         Label(frameOne,text="Serial Number").grid(row=1)
@@ -268,19 +268,19 @@ class CreatePage(tk.Frame):
         serial = Entry(frameOne)
         tag = Entry(frameOne)
         #Months Entry
-        shipmonth =ttk.Combobox(frameOne,width=15)
+        shipmonth =tTk.Combobox(frameOne,width=15)
         shipmonth['values']=months_list
         shipmonth.current(0)
-        shipday=ttk.Combobox(frameOne,width=5)
+        shipday=tTk.Combobox(frameOne,width=5)
         #Day Entry
         shipday['values']=days_list
         shipday.current(0)
         #Year Entry
-        shipyear=ttk.Combobox(frameOne,width=5)
+        shipyear=tTk.Combobox(frameOne,width=5)
         shipyear['values']=years_list
         shipyear.current(0)
         #Location Entry "Floors"
-        location = ttk.Combobox(frameOne,width=5)
+        location = tTk.Combobox(frameOne,width=5)
         location['values']= locations_list
         location.current(0)
         
@@ -320,29 +320,29 @@ class CreatePage(tk.Frame):
                 emptyEntry()
                 
         #Menu Buttons in a second frame for easy button management in a second frame for easy button management
-        frameTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
+        frameTwo = Tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
         frameTwo.grid(row=0, column=8,sticky='W', \
                  padx=5, pady=5, ipadx=5, ipady=5)
-        enter_button= tk.Button(frameOne, text ="Enter",command = create_entry)
+        enter_button= Tk.Button(frameOne, text ="Enter",command = create_entry)
         enter_button.grid(row=4,column=5)
-        edit_button = tk.Button(frameTwo, text="Edit Entry",
+        edit_button = Tk.Button(frameTwo, text="Edit Entry",
                            command=lambda: controller.show_frame(EditPage))
         edit_button.grid(row=3,column=2)
-        view_button= tk.Button(frameTwo, text="View Entry",
+        view_button= Tk.Button(frameTwo, text="View Entry",
                                command=lambda:controller.show_frame(ViewPage))
         view_button.grid(row=4,column=2)
-        return_button = tk.Button(frameTwo, text="Return To Menu",
+        return_button = Tk.Button(frameTwo, text="Return To Menu",
                             command=lambda: controller.show_frame(StartPage))
         return_button.grid(row=5,column=2)
 
 #Edit Entry Page
 
-class EditPage(tk.Frame):
+class EditPage(Tk.Frame):
 
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        Tk.Frame.__init__(self, parent)
         #frame one for easier widget management
-        frameOne = tk.LabelFrame(self, text=" Edit Entry: ",font=LARGE_FONT)
+        frameOne = Tk.LabelFrame(self, text=" Edit Entry: ",font=LARGE_FONT)
         frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
         Label(frameOne,text="Serial Number").grid(row=2)
@@ -378,31 +378,31 @@ class EditPage(tk.Frame):
             else:
                 emptyEntry()
 
-        frameTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
+        frameTwo = Tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
         frameTwo.grid(row=0, column=9,sticky='W', \
                  padx=5, pady=5, ipadx=5, ipady=5)
         #Menu Buttons in a second frame for easy button management
-        enter_button= tk.Button(frameOne, text ="Enter",command = check_entry)
+        enter_button= Tk.Button(frameOne, text ="Enter",command = check_entry)
         enter_button.grid(row=4,column=5)
     
-        create_button = tk.Button(frameTwo, text="Create Entry",
+        create_button = Tk.Button(frameTwo, text="Create Entry",
                             command=lambda: controller.show_frame(CreatePage))
         create_button.grid(row=3,column=2)
 
-        view_button= tk.Button(frameTwo, text="View Entry",
+        view_button= Tk.Button(frameTwo, text="View Entry",
                                command=lambda:controller.show_frame(ViewPage))
         view_button.grid(row=4,column=2)
 
-        return_button = tk.Button(frameTwo, text="Return To Menu",
+        return_button = Tk.Button(frameTwo, text="Return To Menu",
                             command=lambda: controller.show_frame(StartPage))
         return_button.grid(row=5,column=2)
 ##Actual Edit Dialog. Data Entered will be changed upon user confirmation.
 
-class EditEntryPage(tk.Frame):
+class EditEntryPage(Tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        Tk.Frame.__init__(self, parent)
         #frame one for easier widget management
-        frameOne = tk.LabelFrame(self, text=" Edit Entry: *Items left Blank will be Unchanged",font=LARGE_FONT)
+        frameOne = Tk.LabelFrame(self, text=" Edit Entry: *Items left Blank will be Unchanged",font=LARGE_FONT)
         frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
         #labels
@@ -413,19 +413,19 @@ class EditEntryPage(tk.Frame):
         
         tag.grid(row=3,column=1)
         #Months Entry
-        shipmonth =ttk.Combobox(frameOne,width=15)
+        shipmonth =tTk.Combobox(frameOne,width=15)
         shipmonth['values']=months_list
         shipmonth.current(0)
-        shipday=ttk.Combobox(frameOne,width=5)
+        shipday=tTk.Combobox(frameOne,width=5)
         #Day Entry
         shipday['values']=days_list
         shipday.current(0)
         #Year Entry
-        shipyear=ttk.Combobox(frameOne,width=5)
+        shipyear=tTk.Combobox(frameOne,width=5)
         shipyear['values']=years_list
         shipyear.current(0)
         #Location Entry "Floors"
-        location = ttk.Combobox(frameOne,width=5)
+        location = tTk.Combobox(frameOne,width=5)
         location['values']=locations_list
         location.current(0)
         shipmonth.grid(row=4,column=1)
@@ -461,17 +461,17 @@ class EditEntryPage(tk.Frame):
             controller.show_frame(EditPage)
 
 
-        enter_button= tk.Button(frameOne, text ="Enter",command = check_entry)
+        enter_button= Tk.Button(frameOne, text ="Enter",command = check_entry)
         enter_button.grid(row=5,column=2)
 
 
 
         
-class ViewPage(tk.Frame):
+class ViewPage(Tk.Frame):
     def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
+        Tk.Frame.__init__(self, parent)
         #frame one for easier widget management
-        frameOne = tk.LabelFrame(self, text=" View Entry: ",font=LARGE_FONT)
+        frameOne = Tk.LabelFrame(self, text=" View Entry: ",font=LARGE_FONT)
         frameOne.grid(row=0, columnspan=5, rowspan=5,sticky='W', \
                  padx=10, pady=10, ipadx=10, ipady=10)
         #labels
@@ -526,18 +526,18 @@ class ViewPage(tk.Frame):
             else:
                 emptyEntry()
         #Menu Buttons in a second frame for easy button management
-        frameTwo = tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
+        frameTwo = Tk.LabelFrame(self, text= " Menu ",font=LARGE_FONT)
         frameTwo.grid(row=0, column=8,sticky='W', \
                  padx=5, pady=5, ipadx=5, ipady=5)
-        enter_button= tk.Button(frameOne, text ="Enter",command = view_entry)
+        enter_button= Tk.Button(frameOne, text ="Enter",command = view_entry)
         enter_button.grid(row=4,column=2)
-        create_button = tk.Button(frameTwo, text="Create Entry",
+        create_button = Tk.Button(frameTwo, text="Create Entry",
                             command=lambda: controller.show_frame(CreatePage))
         create_button.grid(row=3,column=2)
-        edit_button = tk.Button(frameTwo, text="Edit Entry",
+        edit_button = Tk.Button(frameTwo, text="Edit Entry",
                             command=lambda: controller.show_frame(EditPage))
         edit_button.grid(row=4,column=2)
-        return_button = tk.Button(frameTwo, text="Return To Menu",
+        return_button = Tk.Button(frameTwo, text="Return To Menu",
                             command=lambda: controller.show_frame(StartPage))
         return_button.grid(row=5,column=2)
     
